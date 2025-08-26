@@ -4,7 +4,7 @@ using static Client_Interface_Eventit.Pages.Auth.UsersTest;
 using Client_Interface_Eventit.Auth;
 
 namespace Services.Implementations.Auth
-{
+{//test comment
     public class UserService
     {
         private readonly HttpClient _http;

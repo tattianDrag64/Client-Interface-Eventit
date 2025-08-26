@@ -1,0 +1,157 @@
+﻿@page "/comments/edit/{Id:int}"
+@* @using Client_Interface_Eventit.ApiClient *@
+@* @inject IClient CommentApi *@
+@* @inject Services.Interfaces.ICommentManager ICommentManager *@
+@* @using System.Net.Http.Json *@
+
+<h3>Edit Comment</h3>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (comment == null)
+{
+    <p>Comment not found.</p>
+}
+else
+{
+    <EditForm Model="editModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="content" class="form-label">Content</label>
+            <InputTextArea id="content" class="form-control" @bind-Value="editModel.Content" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-info mt-2">@message</div>
+    }
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private CommentDTO? comment;
+    private UpdateCommentDto editModel = new();
+    private bool isLoading = true;
+    private string? message;
+
+    private async Task<string?> GetTokenOrShowError()
+    {
+        var token = await localStorage.GetItemAsync<string>("Token");
+        if (string.IsNullOrEmpty(token))
+        {
+            message = "You are not authorized.";
+            return null;
+        }
+        return token;
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        try
+        {
+            var token = await GetTokenOrShowError();
+            if (token == null)
+            {
+                isLoading = false;
+                return;
+            }
+            // var request = new HttpRequestMessage(HttpMethod.Get, $"comments/{Id}");
+            // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            // var response = await Http.SendAsync(request);
+            // if (response.IsSuccessStatusCode)
+            // {
+            //     comment = await response.Content.ReadFromJsonAsync<CommentDTO>();
+            //     if (comment != null)
+            //     {
+            //         editModel.Id = comment.Id;
+            //         editModel.Content = comment.Content;
+            //         editModel.UpdatedAt = DateTime.UtcNow;
+            //     }
+            // }
+            // else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            // {
+            //     message = "You are not authorized to view this comment.";
+            //     comment = null;
+            // }
+            // else
+            // {
+            //     message = "Failed to load comment.";
+            //     comment = null;
+            // }
+            comment = await ICommentManager.GetByIdComment(Id);
+            if(comment!= null) {
+                editModel.Id = comment.Id;
+                editModel.Content = comment.Content;
+                editModel.UpdatedAt = DateTime.UtcNow; 
+			}
+			else message = "Comment not found."; 
+        }
+        catch
+        {
+            //comment = null;
+            message = "Failed to load comment.";
+        }
+        isLoading = false;
+    }
+
+    private async Task HandleValidSubmit()
+    {      
+        try {
+            var token = await GetTokenOrShowError();
+            if (token == null) return;
+        // var token = await localStorage.GetItemAsync<string>("Token");
+        // editModel.UpdatedAt = DateTime.UtcNow;
+
+        // var request = new HttpRequestMessage(HttpMethod.Put, $"comments/{Id}")
+        //     {
+        //         Content = JsonContent.Create(editModel)
+        //     };
+        // request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        // var response = await Http.SendAsync(request);
+
+        // if (response.IsSuccessStatusCode)
+        // {
+        //     message = "Comment updated successfully.";
+        // }
+        // else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        // {
+        //     message = "Bad request. Please check your data.";
+        // }
+        // else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        // {
+        //     message = "You are not authorized to edit this comment.";
+        // }
+        // else
+        // {
+        //     message = "Failed to update comment.";
+        // }
+
+
+			editModel.UpdatedAt = DateTime.UtcNow;
+            await ICommentManager.UpdateComment(editModel);
+            message = "Comment updated successfully.";
+
+        }
+			catch
+			{
+				message = "Failed to update comment.";
+			}
+		}
+
+    }
+
+
+

@@ -8,3 +8,7 @@
 @using Microsoft.JSInterop
 @using Client_Interface_Eventit
 @using Client_Interface_Eventit.Layout
+@inject Services.Interfaces.ICommentManager ICommentManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@using Client_Interface_Eventit.ApiClient
+@inject IClient CommentApi

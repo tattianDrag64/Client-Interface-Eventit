@@ -1,0 +1,55 @@
+﻿@page "/comments/event/{EventId:int}"
+@inject HttpClient Http
+
+<h3>Comments for Event @EventId</h3>
+
+@if (comments == null)
+{
+    <p>Loading comments...</p>
+}
+else if (!comments.Any())
+{
+    <p>No comments found for this event.</p>
+}
+else
+{
+    <ul>
+        @foreach (var comment in comments)
+        {
+            <li>
+                <strong>@comment.Content</strong>
+                <br />
+                <small>By User: @comment.UserID | Created: @comment.CreatedAt.ToLocalTime()</small>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+
+    private List<CommentDTO>? comments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            comments = await Http.GetFromJsonAsync<List<CommentDTO>>($"comments/event/{EventId}");
+        }
+        catch
+        {
+            comments = new List<CommentDTO>();
+        }
+    }
+
+    public class CommentDTO
+    {
+        public int ID { get; set; }
+        public string Content { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public Guid UserID { get; set; }
+        public int EventID { get; set; }
+    }
+}

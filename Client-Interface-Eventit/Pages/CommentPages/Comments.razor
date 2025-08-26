@@ -1,0 +1,38 @@
+﻿@* @using Client_Interface_Eventit.ApiClient *@
+@* @inject IClient CommentApi *@
+@* @inject Services.Interfaces.ICommentManager ICommentManager *@
+@page "/comments"
+@* @inject Services.Interfaces.ICommentManager ICommentManager *@
+
+<h3>Comments</h3>
+
+@if (comments == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        @foreach (var comment in comments)
+        {
+            <li>
+                @comment.Content (@comment.CreatedAt)
+                <br />
+                <small>By User: @comment.UserID | Event ID: @comment.EventID</small>
+                <br />
+                <NavLink href=@($"/comments/edit/{comment.Id}")>
+                    <span class="oi oi-pencil" aria-hidden="true"></span> Edit Comment
+                </NavLink>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<CommentDTO> comments;
+    protected override async Task OnInitializedAsync()
+    {
+        comments = await ICommentManager.GetAllComments();
+    }
+
+}

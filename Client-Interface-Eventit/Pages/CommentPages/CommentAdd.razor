@@ -1,0 +1,134 @@
+﻿@* 
+@page "/comments/add"
+
+<h3>Add Comment</h3>
+
+<EditForm Model="newComment" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="content" class="form-label">Content</label>
+        <InputTextArea id="content" class="form-control" @bind-Value="newComment.Content" />
+    </div>
+    <div class="mb-3">
+        <label for="eventId" class="form-label">Event ID</label>
+        <InputNumber id="eventId" class="form-control" @bind-Value="newComment.EventID" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-info mt-2">@message</div>
+}
+
+@code {
+    private CreateCommentDto newComment = new();
+    private string? message;
+
+     private async Task<string?> GetTokenOrShowError()
+    {
+        var token = await localStorage.GetItemAsync<string>("Token");
+        if (string.IsNullOrEmpty(token))
+        {
+            message = "You are not authorized.";
+            return null;
+        }
+        return token;
+    }
+
+
+    private async Task HandleValidSubmit()
+    {
+        var token = await GetTokenOrShowError();
+        if (token == null) return;
+        newComment.CreatedAt = DateTime.UtcNow;
+
+        var created  = ICommentManager.CreateComment(newComment);
+        if (created != null)
+        {
+            message = "Comment added successfully!";
+            newComment = new CreateCommentDto(); 
+        }
+        else
+        {
+            message = "Failed to add comment.";
+        }
+    }
+
+   
+}
+ *@
+@inject Services.Interfaces.ICommentManager ICommentManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+    @page "/comments/add"
+
+<h3>Add Comment</h3>
+
+
+<EditForm Model="newComment" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <p>@newComment.UserID</p>
+    <div class="mb-3">
+        <label for="content" class="form-label">Content</label>
+        <InputTextArea id="content" class="form-control" @bind-Value="newComment.Content" />
+    </div>
+    <div class="mb-3">
+        <label for="eventId" class="form-label">Event ID</label>
+        <InputNumber id="eventId" class="form-control" @bind-Value="newComment.EventID" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-info mt-2">@message</div>
+}
+
+@code {
+    private CreateCommentDto newComment = new();
+    private string? message;
+
+     private async Task<string?> GetTokenOrShowError()
+    {
+        var token = await localStorage.GetItemAsync<string>("Token");
+        if (string.IsNullOrEmpty(token))
+        {
+            message = "You are not authorized.";
+            return null;
+        }
+        return token;
+    }
+
+
+    private async Task HandleValidSubmit()
+    {
+        var token = await GetTokenOrShowError();
+        if (token == null) return;
+
+        newComment.CreatedAt = DateTime.UtcNow;
+		//newComment.UserID = Guid.Parse(token); 
+		newComment.Content = newComment.Content.Trim();
+
+
+        try
+        {
+            var success = await ICommentManager.CreateComment(newComment);
+            if (success)
+            {
+                message = "Comment added successfully!";
+            }
+            else
+            {
+                message = "Failed to add comment.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error creating comment: {ex.Message}";
+        }
+    }
+}

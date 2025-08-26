@@ -1,0 +1,62 @@
+﻿@page "/users-test"
+@using BlazorEventApp.Services
+@inject UserService UserService
+
+<h3>Users Test Page</h3>
+
+@if (users == null)
+{
+    <p>Loading...</p>
+}
+else if (users.Count == 0)
+{
+    <p>No users found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in users)
+            {
+                <tr>
+                    <td>@u.Username</td>
+                    <td>@u.FirstName</td>
+                    <td>@u.LastName</td>
+                    <td>@u.Email</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<UserDTO>? users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            users = await UserService.GetAllUsers();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching users: {ex.Message}");
+        }
+    }
+
+    public class UserDTO
+    {
+        public string Username { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+    }
+}

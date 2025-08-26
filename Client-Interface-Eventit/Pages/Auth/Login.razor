@@ -1,0 +1,49 @@
+﻿@page "/login"
+@using Services.Implementations.Auth
+@using Auth
+@using Models.Auth
+
+
+
+<h3>Login</h3>
+
+<div>
+    <input @bind="dto.Username" placeholder="Username" />
+</div>
+<div>
+    <input @bind="dto.Password" type="password" placeholder="Password" />
+</div>
+<div>
+    <input @bind="dto.Audience" placeholder="Audience" />
+</div>
+<button @onclick="HandleLogin">Login</button>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@code {
+    private LoginUserDto dto = new();
+    private string errorMessage = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        var success = await UserService.Login(dto);
+        if (success)
+        {
+            // Notify Blazor auth state
+            var tokens = await UserService.GetTokens();
+            if (tokens != null)
+            {
+                AuthProvider.NotifyUserAuthentication(tokens.AccessToken);
+            }
+
+            Nav.NavigateTo("/"); // redirect after login
+        }
+        else
+        {
+            errorMessage = "Invalid username or password";
+        }
+    }
+}

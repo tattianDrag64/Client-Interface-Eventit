@@ -1,0 +1,51 @@
+﻿@page "/register"
+@using BlazorEventApp.Models
+@using BlazorEventApp.Services
+@inject UserService UserService
+@inject NavigationManager Nav
+
+<h3>Register</h3>
+
+<div>
+    <input @bind="dto.Username" placeholder="Username" />
+</div>
+<div>
+    <input @bind="dto.FirstName" placeholder="First Name" />
+</div>
+<div>
+    <input @bind="dto.LastName" placeholder="Last Name" />
+</div>
+<div>
+    <input @bind="dto.Email" placeholder="Email" />
+</div>
+<div>
+    <input @bind="dto.Password" type="password" placeholder="Password" />
+</div>
+<div>
+    <input @bind="dto.ConfirmPassword" type="password" placeholder="Confirm Password" />
+</div>
+
+<button @onclick="HandleRegister">Register</button>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@code {
+    private CreateUserDto dto = new();
+    private string errorMessage = string.Empty;
+
+    private async Task HandleRegister()
+    {
+        var success = await UserService.Register(dto);
+        if (success)
+        {
+            Nav.NavigateTo("/login"); // redirect to login
+        }
+        else
+        {
+            errorMessage = "Registration failed. Check input and try again.";
+        }
+    }
+}

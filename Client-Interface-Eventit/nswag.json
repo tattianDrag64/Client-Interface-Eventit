@@ -1,9 +1,9 @@
 {
-  "runtime": "Net80",
+  "runtime": "Net90",
   "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
-      "url": "https://localhost:7279/swagger/v1/swagger.json",
+      "url": "https://localhost:7299/swagger/v1/swagger.json",
       "output": null,
       "newLineBehavior": "Auto"
     }
@@ -60,7 +60,7 @@
       "wrapResponseMethods": [],
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",
-      "namespace": "Client_Interface_Eventit.ApiClient",
+      "namespace": "Client-Interface-Eventit.ApiClient",
       "requiredPropertiesMustBeDefined": true,
       "dateType": "System.DateTimeOffset",
       "jsonConverters": null,
@@ -95,7 +95,7 @@
       "templateDirectory": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "ApiClient/CommentApiClient.cs",
+      "output": "ApiClient/EventApiClient.cs",
       "newLineBehavior": "Auto"
     }
   }

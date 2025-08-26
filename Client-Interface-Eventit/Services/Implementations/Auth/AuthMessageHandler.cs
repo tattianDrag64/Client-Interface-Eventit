@@ -1,7 +1,7 @@
 ﻿using Client_Interface_Eventit.Auth;
 using System.Net.Http.Headers;
 
-namespace Client_Interface_Eventit.Services.Implementations.Auth
+namespace Services.Implementations.Auth
 {
     public class AuthMessageHandler : DelegatingHandler
     {

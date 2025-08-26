@@ -1,7 +1,10 @@
 ﻿@page "/login"
 @using Services.Implementations.Auth
-@using Auth
+@using Client_Interface_Eventit.Auth
 @using Models.Auth
+@inject UserService UserService
+@inject NavigationManager Nav
+@inject ApiAuthenticationStateProvider AuthProvider
 
 
 

@@ -1,4 +1,14 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Client_Interface_Eventit.Auth
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Authorization
+@using Models.Auth
+@using Services.Implementations.Auth
+@inject NavigationManager Nav
+@inject ApiAuthenticationStateProvider AuthProvider
+@inject Services.Implementations.Auth.UserService UserService
+
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Client-Interface-Eventit</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -17,16 +27,64 @@
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Add Comment
             </NavLink>
         </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/users-test">Users Test</NavLink>
+
+        </div>
+
+        @if (userName is null)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/login">
+                    <span class="bi bi-box-arrow-in-right" aria-hidden="true"></span> Login
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <span class="nav-link">Hello, @userName!</span>
+            </div>
+            <div class="nav-item px-3">
+                <a class="nav-link" href="#" @onclick="Logout">Logout</a>
+            </div>
+        }
     </nav>
 </div>
 
+
 @code {
     private bool collapseNavMenu = true;
-
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private string? userName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            userName = user.Identity.Name ?? "User";
+        }
+    }
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private async Task Logout()
+    {
+        await UserService.Logout();
+
+        if (AuthProvider is ApiAuthenticationStateProvider apiAuth)
+        {
+            apiAuth.NotifyUserLogout();
+        }
+
+        userName = null;
+        Nav.NavigateTo("/"); // redirect to home
     }
 }

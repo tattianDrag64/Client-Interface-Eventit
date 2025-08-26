@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using static Client_Interface_Eventit.Pages.Auth.UsersTest;
 using Client_Interface_Eventit.Auth;
 
-namespace Client_Interface_Eventit.Services.Implementations.Auth
+namespace Services.Implementations.Auth
 {
     public class UserService
     {

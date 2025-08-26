@@ -90,9 +90,14 @@ builder.Services.AddScoped(sp => new HttpClient
 
 });
 
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri("https://localhost:7277/"),
+
+});
 
 
-
+//NSwag installing 
 
 
 
@@ -113,6 +118,13 @@ builder.Services.AddScoped<IClientUser>(sp =>
     var httpClient = sp.GetRequiredService<HttpClient>();
     return new ClientUser("https://localhost:7264", httpClient);
 });
+
+builder.Services.AddScoped<IClientTask>(sp =>
+{
+    var httpClient = sp.GetRequiredService<HttpClient>();
+    return new ClientTask("https://localhost:7277", httpClient);
+});
+
 
 builder.Services.AddScoped<ICommentManager, CommentManager>();
 
